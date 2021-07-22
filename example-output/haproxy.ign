@@ -1,0 +1,36 @@
+{
+  "ignition": {
+    "version": "3.2.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII+F3XpAIh4l8GfPgwoTqWQj0OdZRnnG9Ak4Z0wu0Upj mooncake"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "path": "/etc/haproxy/haproxy.cfg",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/6RUwY6bQAy9z1f4XIkNkCjazaWfUg2DA6MMNusxyfbvKyAByrKpqp0cknien/2eDSWebRc0GoCGSwRQ1/a/7YdjIsjTNE0NQOAKAHZXKzvpaFfbVvjj9+M7CVy9RHYXCOxs6BO4Vc8EUDJp4Iq6EAyAoIrHCHsDoL5B7hRq1TYRfO8wKmRpXFy9d9ghQNYsYn1b6BRWUBc8kgLAoV5EI8oVZR0dKl4Q28QGf8U1U43uAvMZbx+GrM++98cEHxUJotrBycJTCfDjlL3tj5OxfdXJySpwYXtHhhRAskXA6W/tS0yuKNEzTUHBs2Cs7/2MsVjzLSEu51TbaQ22bDydWhvjjaWc7jrx8BjZz7FXcxYmRSrBtj4Z7XoIyNKX/pOdjodDP7D7qvwqrLusMmaaxrraEyaO6eyrrxjz/JhvUW5nz+zCnaIkdyv/5nxNNwg9VYIxjhmbPPET0bbaJVM0ZsMEgMIGSw57eiqFCz9Mb9zBglmjim0fhd4GX8d1m2GNjYqSTd1kT1D5hMqfoPYTar9Emeee/7eYYaT/VvMEtpTzBLbUs4SZzZl/oWN4JMdX3Z38xnJZtJqnp9d03cCImfrMsxljtvfkG+U3Bvq5/gz6EwAA//+h5bmOyQUAAA=="
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=haproxy\nAfter=network-online.target\nWants=network-online.target\n[Service]\nTimeoutStartSec=0\nExecStartPre=-/bin/podman kill haproxy\nExecStartPre=-/bin/podman rm haproxy\nExecStartPre=/bin/podman pull quay.io/openshift/origin-haproxy-router\nExecStart=/bin/podman run --name haproxy \\\n --net=host \\\n --privileged \\\n --entrypoint=/usr/sbin/haproxy \\\n -v /etc/haproxy/haproxy.cfg:/var/lib/haproxy/conf/haproxy.cfg:Z \\\nquay.io/openshift/origin-haproxy-router -f /var/lib/haproxy/conf/haproxy.cfg\n[Install]\nWantedBy=multi-user.target",
+        "enabled": true,
+        "name": "haproxy.service"
+      }
+    ]
+  }
+}

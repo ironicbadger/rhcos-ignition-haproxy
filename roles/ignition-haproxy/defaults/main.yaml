@@ -1,0 +1,17 @@
+---
+
+lb_ssh_key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+lb_vm:
+  name: lb
+  ipaddr: 10.0.0.1
+bootstrap_vm:
+  name: bootstrap
+  ipaddr: 10.0.0.9
+master_vms:
+  - { name: "master1", ipaddr: "10.0.0.11"}
+  - { name: "master2", ipaddr: "10.0.0.12"}
+  - { name: "master3", ipaddr: "10.0.0.13"}
+worker_vms:
+  - { name: "worker1", ipaddr: "10.0.0.20"}
+  - { name: "worker2", ipaddr: "10.0.0.21"}

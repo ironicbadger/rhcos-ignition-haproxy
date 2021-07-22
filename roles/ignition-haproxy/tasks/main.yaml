@@ -1,0 +1,17 @@
+---
+- name: Create Temp Build Directory for HAProxy
+  file:
+    path: "{{ playbook_dir }}/output"
+    state: directory
+
+- name: "Create haproxy.cfg file"
+  template:
+    src: templates/haproxy.cfg.j2
+    dest: "{{ playbook_dir }}/output/haproxy.cfg"
+    mode: 0664
+
+- name: "Create ignition config for load balancer node"
+  template:
+    src: templates/haproxy.fcc.j2
+    dest: "{{ playbook_dir }}/output/haproxy.fcc"
+    mode: 0664
