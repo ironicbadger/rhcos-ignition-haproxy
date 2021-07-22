@@ -18,3 +18,5 @@ butane -d output --pretty --strict < output/haproxy.fcc > output/haproxy.ign
 In both cases the file output to `output/haproxy.ign` is an Ignition file suitable for ingestion by RHCOS. It will create a container automatically running Haproxy via podman.
 
 For real world usage this should be adapted into a standalone role and the values in defaults should be customized.
+
+Credit to: [cptmorgan-rh](https://github.com/cptmorgan-rh/ocp4-aio-vsphere-upi-lab/blob/main/roles/loadbalancer/tasks/main.yml)
