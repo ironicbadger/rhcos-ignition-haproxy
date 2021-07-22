@@ -15,6 +15,6 @@ ansible-playbook local.yaml --connection=local
 butane -d output --pretty --strict < output/haproxy.fcc > output/haproxy.ign
 ```
 
-In both cases the file output to `output/haproxy.ign` is an Ignition file suitable for ingestion by RHCOS. It will create a contain automatically running Haproxy via podman.
+In both cases the file output to `output/haproxy.ign` is an Ignition file suitable for ingestion by RHCOS. It will create a container automatically running Haproxy via podman.
 
 For real world usage this should be adapted into a standalone role and the values in defaults should be customized.
