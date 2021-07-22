@@ -8,11 +8,11 @@ You will need to install Ansible and [Butane](https://docs.fedoraproject.org/en-
 
 ```
 # using the makefile
-    make lbign
+make lbign
 
 # manually
-	ansible-playbook local.yaml --connection=local
-	butane -d output --pretty --strict < output/haproxy.fcc > output/haproxy.ign
+ansible-playbook local.yaml --connection=local
+butane -d output --pretty --strict < output/haproxy.fcc > output/haproxy.ign
 ```
 
 In both cases the file output to `output/haproxy.ign` is an Ignition file suitable for ingestion by RHCOS. It will create a contain automatically running Haproxy via podman.
