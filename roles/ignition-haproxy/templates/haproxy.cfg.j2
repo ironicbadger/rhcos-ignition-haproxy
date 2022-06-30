@@ -57,13 +57,13 @@ backend machine-config-server
 backend ingress-http
   balance roundrobin
   mode tcp
-{% for worker in worker_vms %}
-  server {{ worker.name }} {{ worker.ipaddr }}:80 check
+{% for master in master_vms %}
+  server {{ master.name }} {{ master.ipaddr }}:80 check
 {% endfor %}
 
 backend ingress-https
   balance roundrobin
   mode tcp
-{% for worker in worker_vms %}
-  server {{ worker.name }} {{ worker.ipaddr }}:443 check
+{% for master in master_vms %}
+  server {{ master.name }} {{ master.ipaddr }}:443 check
 {% endfor %}

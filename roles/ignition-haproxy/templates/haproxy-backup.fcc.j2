@@ -1,0 +1,93 @@
+variant: fcos
+version: 1.3.0
+boot_device:
+  mirror:
+    devices:
+      - /dev/sda
+      - /dev/sdb
+storage:
+  disks:
+    - device: /dev/sda
+      partitions:
+        - label: root-1
+          size_mib: 25000
+        - label: var-1
+      wipe_table: true
+    - device: /dev/sdb
+      partitions:
+        - label: root-2
+          size_mib: 25000
+        - label: var-2
+      wipe_table: true
+  raid:
+    - name: md-var
+      level: raid1
+      devices:
+        - /dev/disk/by-partlabel/var-1
+        - /dev/disk/by-partlabel/var-2
+  filesystems:
+    - device: /dev/md/md-var
+      path: /var
+      format: xfs
+      wipe_filesystem: true
+      with_mount_unit: true
+  files:
+    - path: /etc/haproxy/haproxy.cfg
+      contents:
+        local: haproxy.cfg
+      mode: 0644
+    - path: /etc/keepalived/keepalived.conf
+      contents:
+        local: keepalived-backup.conf
+      mode: 0644
+passwd:
+  users:
+  - name: core
+    groups:
+      - wheel
+    ssh_authorized_keys:
+{% for ssh_key in lb_ssh_key %}
+      - {{ ssh_key.key }}
+{% endfor %}
+systemd:
+  units:
+    - name: haproxy.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=haproxy
+        After=network-online.target
+        Wants=network-online.target
+        [Service]
+        TimeoutStartSec=0
+        ExecStartPre=-/bin/podman kill haproxy
+        ExecStartPre=-/bin/podman rm haproxy
+        ExecStartPre=/bin/podman pull quay.io/openshift/origin-haproxy-router
+        ExecStart=/bin/podman run --name haproxy \
+         --net=host \
+         --privileged \
+         --entrypoint=/usr/sbin/haproxy \
+         -v /etc/haproxy/haproxy.cfg:/var/lib/haproxy/conf/haproxy.cfg:Z \
+        quay.io/openshift/origin-haproxy-router -f /var/lib/haproxy/conf/haproxy.cfg
+        [Install]
+        WantedBy=multi-user.target
+    - name: keepalived.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=keepalived
+        After=network-online.target
+        Wants=network-online.target
+        [Service]
+        TimeoutStartSec=0
+        ExecStartPre=-/bin/podman kill keepalived
+        ExecStartPre=-/bin/podman rm keepalived
+        ExecStartPre=/bin/podman pull quay.io/openshift/origin-keepalived-ipfailover
+        ExecStart=/bin/podman run --name keepalived \
+         --net=host \
+         --privileged \
+         --entrypoint=/usr/sbin/keepalived \
+         -v /etc/keepalived/keepalived.conf:/etc/keepalived/keepalived.conf:Z \
+        quay.io/openshift/origin-keepalived-ipfailover -f /etc/keepalived/keepalived.conf
+        [Install]
+        WantedBy=multi-user.target

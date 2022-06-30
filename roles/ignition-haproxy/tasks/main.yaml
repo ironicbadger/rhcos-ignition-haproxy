@@ -4,14 +4,15 @@
     path: "{{ playbook_dir }}/output"
     state: directory
 
-- name: "Create haproxy.cfg file"
+- name: "Drop necessary templates into output folder"
   template:
-    src: templates/haproxy.cfg.j2
-    dest: "{{ playbook_dir }}/output/haproxy.cfg"
+    src: templates/{{ item.src }}.j2
+    dest: "{{ playbook_dir }}/output/{{ item.src }}"
     mode: 0664
-
-- name: "Create ignition config for load balancer node"
-  template:
-    src: templates/haproxy.fcc.j2
-    dest: "{{ playbook_dir }}/output/haproxy.fcc"
-    mode: 0664
+  loop:
+    - src: haproxy-backup.fcc
+    - src: haproxy-master.fcc
+    - src: haproxy.cfg
+    - src: keepalived-master.conf
+    - src: keepalived-backup.conf
+...
