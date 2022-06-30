@@ -45,7 +45,6 @@ passwd:
   - name: core
     groups:
       - wheel
-    password_hash: '$y$j9T$nvYpGp6K1P9QtJ3NGhw2C/$vdgTUhg/YVNjeYqbEXwrbHVxzkj1MXvOkhQ6hMreL7B'
     ssh_authorized_keys:
 {% for ssh_key in lb_ssh_key %}
       - {{ ssh_key.key }}
